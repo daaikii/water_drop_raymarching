@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 
-import vertex from "./shaders/vertex.glsl";
-import fragment from "./shaders/fragment.glsl";
+import vertex from "./glsl/vertex.glsl";
+import fragment from "./glsl/fragment.glsl";
 
 const width = window.innerWidth, height = window.innerHeight;
 
@@ -36,8 +36,6 @@ export default class Sketch {
 
   render() {
     this.time++;
-    this.mesh.rotation.x += 0.01;
-    this.mesh.rotation.y += 0.02;
     this.renderer.render(this.scene, this.camera);
     window.requestAnimationFrame(this.render.bind(this));
   }
