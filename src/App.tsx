@@ -1,9 +1,9 @@
 import './App.css'
-import CanvasComp from "./components/base/CanvasComp"
+import TCanvas from "./components/base/TCanvas"
 
 function App() {
   return (
-    <CanvasComp />
+    <TCanvas />
   )
 }
 
