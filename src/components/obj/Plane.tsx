@@ -1,41 +1,47 @@
+import { useMemo, useRef } from "react"
+import { createPortal, useFrame } from "@react-three/fiber"
 import * as THREE from "three"
-import { useRef, useMemo } from "react"
-import { useFrame } from "@react-three/fiber"
-import { createPortal } from "@react-three/fiber"
 
-import Font from "../obj/Font"
 import vertex from "../../glsl/planeVertex.glsl"
 import fragment from "../../glsl/planeFragment.glsl"
+import Font from "./Font"
 
 const Plane = () => {
-  const cam = useRef()
+  const camera = useRef()
+  const matRef = useRef()
   const [scene, target] = useMemo(() => {
     const scene = new THREE.Scene()
-    scene.background = new THREE.Color("rgb(100,100,100)")
-    const target = new THREE.WebGLRenderTarget(window.innerWidth, window.innerHeight)
-    return [scene, target]
+    scene.background = new THREE.Color("rgb(199,199,240)")
+    const renderTarget = new THREE.WebGLRenderTarget(1024, 1024)
+    return [scene, renderTarget]
   }, [])
 
-  useFrame((state) => {
-    state.gl.setRenderTarget(target)
-    state.gl.render(scene, cam.current)
-    state.gl.setRenderTarget(null)
+  useFrame(({ gl }) => {
+    gl.setRenderTarget(target);
+    gl.render(scene, camera.current);
+    gl.setRenderTarget(null)
+    matRef.current.uniforms.u_time.value += 0.015;
   })
-
   return (
     <>
-      <perspectiveCamera ref={cam} position={[0, 0, 15]} />
+      <perspectiveCamera
+        ref={camera}
+        args={[50, 1, 1, 1000]}
+        position={[0, 0, 10]}
+      />
       {createPortal(<Font />, scene)}
       <mesh >
-        <planeGeometry args={[2, 2]} />
+        <planeGeometry args={[7, 7]} />
         <shaderMaterial
           attach="material"
+          ref={matRef}
           args={[
             {
               vertexShader: vertex,
               fragmentShader: fragment,
               uniforms: {
-                u_texture: { value: target.texture },
+                u_time: { value: 0 },
+                u_texture: { value: target.texture }
               }
             }
           ]}

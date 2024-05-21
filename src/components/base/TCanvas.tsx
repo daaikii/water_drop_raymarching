@@ -5,11 +5,10 @@ import Plane from '../obj/Plane'
 const TCanvas = () => {
   return (
     <Canvas >
+      <color attach="background" args={[0, 0, 1]} />
       <ambientLight />
-      <spotLight position={[10, 10, 10]} />
       <pointLight position={[-10, -10, -10]} />
       <Plane />
-      <OrbitControls />
     </Canvas>
   )
 }
