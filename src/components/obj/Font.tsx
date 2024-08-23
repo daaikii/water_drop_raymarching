@@ -1,5 +1,5 @@
 import { FC } from "react";
-import { FontLoader, TextGeometry } from "three/examples/jsm/Addons.js";
+import { FontData, FontLoader, TextGeometry } from "three/examples/jsm/Addons.js";
 import { Center } from "@react-three/drei";
 
 import fnt from "../../../public/Roboto Medium_Regular.json"
@@ -9,7 +9,7 @@ import fragment from "../../glsl/fontFragment.glsl"
 
 const Font: FC = () => {
   const loader = new FontLoader()
-  const font = loader.parse(fnt)
+  const font = loader.parse(fnt as unknown as FontData)
   const textGeo = new TextGeometry("Oil_Fluid", {
     font: font,
     size: 1,

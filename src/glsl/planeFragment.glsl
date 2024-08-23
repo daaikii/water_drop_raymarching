@@ -2,7 +2,7 @@ uniform float u_time;
 uniform sampler2D u_texture;
 varying vec2 vUv; 
 
-
+//smooth minimum function
 float smin(float a,float b,float k){
   float h = max(k-abs(a-b),0.0)/k;
   return min(a,b)-h*h*h*k*(1.0/6.0);
@@ -15,8 +15,7 @@ float sdSphere (vec3 p , float r){
 float map(vec3 p){
   float sphere=999.;
 
-  // vec3 spherePos = vec3(0.,0.0,0.0);
-  // sphere =sdSphere(p-spherePos,.5);
+  //ずらした位置に球体を5つ作成
   for(int i=0;i<5;i++){
     float fi = float(i) * 0.8+ u_time * 0.1;
     vec3 pp = p + vec3(
@@ -27,13 +26,18 @@ float map(vec3 p){
     sphere = smin(sphere,sdSphere(pp,0.3),1.);
   }
 
+  //球を一つ表示+地面表示
+  // vec3 spherePos = vec3(0.,0.0,0.0);
+  // sphere =sdSphere(p-spherePos,.5);
   // float ground = p.y +1. ;
-
   // float d = min(sphere,ground);
+
   float d = sphere;
   return d;
 }
 
+
+//法線を取得
 vec3 calcNormal(in vec3 pos){
   vec2 e = vec2(0.001,0.0);
   return normalize(vec3(map(pos+e.xyy)-map(pos-e.xyy),
@@ -42,9 +46,14 @@ vec3 calcNormal(in vec3 pos){
   ));
 }
 
+
+
 float fresnel (vec3 r,vec3 n){
   return pow(1.+dot(r,n),4.0)*0.3;
 }
+
+
+
 
 
 //------------------------------------------------------------
@@ -52,7 +61,7 @@ void main() {
 
   vec2 centerUV = vUv -0.5 ;
 
-  vec3 ro = vec3(0.0,0.0,-3.);        //ray origin
+  vec3 ro = vec3(0.0,0.0,-3.);                //ray origin
   vec3 rd = normalize(vec3(centerUV*3.,3.));  //ray direction
 
   // vec2 hit = vec2(0.,0.);
@@ -66,17 +75,24 @@ void main() {
     t += d; //"march" the ray
     if(d < 0.01 || t > 100.)break;
   }
+
+
+
+  
   vec2 uv = vUv ;
   vec3 color = texture2D(u_texture,uv).rgb;
 
+  //球内の処理
   if(t<100.){
     vec3 pos = ro + rd * t;
     vec3 nor = calcNormal(pos);
     float f = fresnel(rd,nor);
 
+    //屈折したuvに変更
     float len = pow(length(nor.xy),2.0);
     uv+=nor.xy*len*0.1;
 
+    // 球内のテクスチャに反射を追加
     vec3 reflTex = texture2D(u_texture,uv).rgb;
     reflTex += f;
     color = vec3(reflTex);

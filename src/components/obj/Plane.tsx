@@ -7,8 +7,8 @@ import fragment from "../../glsl/planeFragment.glsl"
 import Font from "./Font"
 
 const Plane = () => {
-  const camera = useRef()
-  const matRef = useRef()
+  const camera = useRef<THREE.PerspectiveCamera>(null)
+  const matRef = useRef<THREE.ShaderMaterial>(null)
   const [scene, target] = useMemo(() => {
     const scene = new THREE.Scene()
     scene.background = new THREE.Color("rgb(199,199,240)")
@@ -18,9 +18,9 @@ const Plane = () => {
 
   useFrame(({ gl }) => {
     gl.setRenderTarget(target);
-    gl.render(scene, camera.current);
+    if (camera.current) gl.render(scene, camera.current);
     gl.setRenderTarget(null)
-    matRef.current.uniforms.u_time.value += 0.015;
+    if (matRef.current) matRef.current.uniforms.u_time.value += 0.015;
   })
   return (
     <>
